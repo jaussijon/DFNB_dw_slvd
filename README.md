@@ -2,6 +2,10 @@
 NAME:    Read Me.txt
 PURPOSE: Read Me Text file
 
+SUPPORT: Jaussi Consulting LLC
+         www.jaussiconsulting.net
+         jon@jaussiconsulting.net
+
 MODIFICATION LOG:
 Ver      Date        Author        Description
 -----   ----------   -----------   -------------------------------------------------------------------------------
@@ -9,6 +13,8 @@ Ver      Date        Author        Description
 
 
 NOTES:
+DFNB_dw_slvd = Deseret First Nation Bank - Data Warehouse - Solved
+
 DFNB - Deseret First Nation Bank. A fictitious organization. Does not use any ZFNB data. Some general ZFNB 
 data model elements used as inspiration.
 
@@ -27,5 +33,3 @@ the freedom to run, study, share, and modify the code. This license grants the r
 of the code the rights of the Free Software Definition. All derivative work can only be
 distributed under the same license terms.
 ******************************************************************************************************************/
-# DFNB_dw_slvd
-Deseret First Nation Bank - Data Warehouse - Solved
