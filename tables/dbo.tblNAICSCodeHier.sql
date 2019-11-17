@@ -6,6 +6,7 @@ MODIFICATION LOG:
 Ver      Date        Author        Description
 -----   ----------   -----------   -------------------------------------------------------------------------------
 1.0     11/12/2019   JJAUSSI       1. Built this table for LDS BC IT240
+1.1     11/16/2019   JJAUSSI       1. Added PK and NOT NULL contraints
 
 
 
@@ -23,33 +24,26 @@ distributed under the same license terms.
  
 ******************************************************************************************************************/
 
-
 USE [DFNB3]
 GO
 
-/****** Object:  Table [dbo].[tblNAICSCodeHier]    Script Date: 11/12/2019 10:02:53 PM ******/
-DROP TABLE [dbo].[tblNAICSCodeHier]
-GO
-
-/****** Object:  Table [dbo].[tblNAICSCodeHier]    Script Date: 11/12/2019 10:02:53 PM ******/
-SET ANSI_NULLS ON
-GO
-
-SET QUOTED_IDENTIFIER ON
-GO
+DROP TABLE [dbo].[tblNAICSCodeHier];
 
 CREATE TABLE [dbo].[tblNAICSCodeHier](
-	[industry_sector_code] [float] NULL,
-	[industry_sector_desc] [nvarchar](500) NULL,
-	[industry_sub_sector_code] [float] NULL,
-	[industry_sub_sector_desc] [nvarchar](500) NULL,
-	[industry_group_code] [float] NULL,
-	[industry_group_desc] [nvarchar](500) NULL,
-	[industry_code] [float] NULL,
-	[industry_desc] [nvarchar](500) NULL,
-	[nation_industry_code] [float] NULL,
-	[nation_industry_desc] [nvarchar](500) NULL
+	[industry_sector_code] [float] NOT NULL,
+	[industry_sector_desc] [nvarchar](500) NOT NULL,
+	[industry_sub_sector_code] [float] NOT NULL,
+	[industry_sub_sector_desc] [nvarchar](500) NOT NULL,
+	[industry_group_code] [float] NOT NULL,
+	[industry_group_desc] [nvarchar](500) NOT NULL,
+	[industry_code] [float] NOT NULL,
+	[industry_desc] [nvarchar](500) NOT NULL,
+	[nation_industry_code] [float] NOT NULL,
+	[nation_industry_desc] [nvarchar](500) NOT NULL,
+ CONSTRAINT [PK_tblNAICSCodeHier] PRIMARY KEY CLUSTERED 
+(
+	[nation_industry_code] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-
 
