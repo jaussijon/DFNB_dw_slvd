@@ -139,6 +139,20 @@ IF EXISTS
 (
     SELECT fk.*
       FROM sys.foreign_keys AS fk
+     WHERE fk.name = 'FK_tblCustomerDim_cust_add_id_tblAddressDim_add_id'
+           AND parent_object_id = OBJECT_ID(N'dbo.tblCustomerDim')
+)
+    BEGIN
+
+        ALTER TABLE dbo.tblCustomerDim DROP CONSTRAINT FK_tblCustomerDim_cust_add_id_tblAddressDim_add_id;
+
+END;
+
+
+IF EXISTS
+(
+    SELECT fk.*
+      FROM sys.foreign_keys AS fk
      WHERE fk.name = 'FK_tblAccountDim_branch_id_tblBranchDim_branch_id'
            AND parent_object_id = OBJECT_ID(N'dbo.tblAccountDim')
 )
@@ -779,7 +793,7 @@ IF EXISTS
            AND parent_object_id = OBJECT_ID('dbo.tblAccountCustomerRoleDim')
 )
     BEGIN
-        ALTER TABLE dbo.tblAccountCustomerDim DROP CONSTRAINT PK_tblAccountCustomerRoleDim;
+        ALTER TABLE dbo.tblAccountCustomerRoleDim DROP CONSTRAINT PK_tblAccountCustomerRoleDim;
 END; 
 
 ALTER TABLE dbo.tblAccountCustomerRoleDim
