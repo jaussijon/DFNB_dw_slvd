@@ -1,16 +1,17 @@
 USE [DFNB3]
 GO
 
-/****** Object:  StoredProcedure [dbo].[usp_LoadRegionDim]    Script Date: 11/23/2019 11:57:48 AM ******/
+/****** Object:  StoredProcedure [dbo].[usp_LoadRegionDim]    Script Date: 11/25/2019 4:06:55 PM ******/
 DROP PROCEDURE [dbo].[usp_LoadRegionDim]
 GO
 
-/****** Object:  StoredProcedure [dbo].[usp_LoadRegionDim]    Script Date: 11/23/2019 11:57:48 AM ******/
+/****** Object:  StoredProcedure [dbo].[usp_LoadRegionDim]    Script Date: 11/25/2019 4:06:55 PM ******/
 SET ANSI_NULLS ON
 GO
 
 SET QUOTED_IDENTIFIER ON
 GO
+
 
 
 
@@ -25,6 +26,7 @@ MODIFICATION LOG:
 Ver      Date        Author        Description
 -----   ----------   -----------   -------------------------------------------------------------------------------
 1.0     11/23/2019   JJAUSSI       1. Built this table for LDS BC IT243
+1.1     11/25/2019   JJAUSSI       1. Added Org Hierarchy enhancements
 
 
 
@@ -56,9 +58,21 @@ distributed under the same license terms.
         INSERT INTO dbo.tblRegionDim
         SELECT DISTINCT 
                s.acct_region_id AS region_id
-             , 'Unknown' AS region_desc
+             , oh.region_desc
           FROM dbo.stg_p1 AS s
+		  INNER JOIN stg.ORG_HIER AS oh
+		     ON oh.region_id = s.acct_region_id
          ORDER BY 1;
+
+
+
+		-- 3) Load the Unknown Region
+
+        INSERT INTO dbo.tblRegionDim
+        SELECT DISTINCT oh.region_id
+                      , oh.region_desc
+          FROM stg.ORG_HIER AS oh
+		 WHERE oh.region_id = -1;
                 
 
     END;

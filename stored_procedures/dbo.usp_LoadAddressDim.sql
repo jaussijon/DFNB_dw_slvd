@@ -25,6 +25,7 @@ MODIFICATION LOG:
 Ver      Date        Author        Description
 -----   ----------   -----------   -------------------------------------------------------------------------------
 1.0     11/23/2019   JJAUSSI       1. Built this table for LDS BC IT243
+1.1     11/25/2019   JJAUSSI       1. Added Org Hierarchy enhancements
 
 
 
@@ -65,6 +66,16 @@ distributed under the same license terms.
              , s.cust_add_lon AS add_lon
              , s.cust_add_type AS add_type
           FROM dbo.stg_p1 AS s;
+			   
+   
+
+		-- 3) Load Unknown Address
+
+        INSERT INTO dbo.tblAddressDim
+        SELECT -1 AS add_id
+             , 0 AS add_lat
+             , 0 AS add_lon
+             , 'U' AS add_type;
                 
 
     END;

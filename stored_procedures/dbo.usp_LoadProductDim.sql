@@ -1,16 +1,17 @@
 USE [DFNB3]
 GO
 
-/****** Object:  StoredProcedure [dbo].[usp_LoadProductDim]    Script Date: 11/23/2019 11:57:48 AM ******/
+/****** Object:  StoredProcedure [dbo].[usp_LoadProductDim]    Script Date: 11/25/2019 3:57:22 PM ******/
 DROP PROCEDURE [dbo].[usp_LoadProductDim]
 GO
 
-/****** Object:  StoredProcedure [dbo].[usp_LoadProductDim]    Script Date: 11/23/2019 11:57:48 AM ******/
+/****** Object:  StoredProcedure [dbo].[usp_LoadProductDim]    Script Date: 11/25/2019 3:57:22 PM ******/
 SET ANSI_NULLS ON
 GO
 
 SET QUOTED_IDENTIFIER ON
 GO
+
 
 
 
@@ -25,6 +26,7 @@ MODIFICATION LOG:
 Ver      Date        Author        Description
 -----   ----------   -----------   -------------------------------------------------------------------------------
 1.0     11/23/2019   JJAUSSI       1. Built this table for LDS BC IT243
+1.1     11/25/2019   JJAUSSI       1. Added Product Profile enhancements
 
 
 
@@ -56,9 +58,27 @@ distributed under the same license terms.
         INSERT INTO dbo.tblProductDim
         SELECT DISTINCT 
                s.prod_id
-             , 'Unknown' AS prod_desc
+             , p.prod_code
+			 , p.prod_desc
+			 , p.revolve_ind
+			 , p.loan_amt_lmt
           FROM dbo.stg_p1 AS s
+		  INNER JOIN stg.PRODUCT_PROFILE AS p
+		          ON s.prod_id = p.prod_id
          ORDER BY 1;
+
+
+
+		 -- 3) Load the Unknown record
+		 
+        INSERT INTO dbo.tblProductDim
+        SELECT p.prod_id
+             , p.prod_code
+			 , p.prod_desc
+			 , p.revolve_ind
+			 , p.loan_amt_lmt
+          FROM stg.PRODUCT_PROFILE AS p
+         WHERE p.prod_id = -1;
                 
 
     END;
