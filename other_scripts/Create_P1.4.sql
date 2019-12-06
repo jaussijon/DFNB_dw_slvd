@@ -11,6 +11,8 @@ Ver       Date         Author       Description
 -------   ----------   ----------   -----------------------------------------------------------------------------
 1.0       11/01/2019   JJAUSSI      1. Built this script  for LDS BC IT 240
 1.1       11/02/2019   JJAUSSI      1. Added data analysis insights
+1.2       12/05/2019   JJAUSSI      1. Added UNKNOWN records
+                                    2. Added Transaction table handling
 
 
 RUNTIME: 
@@ -29,10 +31,11 @@ distributed under the same license terms.
 ******************************************************************************************************************/
 
 
--- 1) Drop contraints
+-- 1) Drop contraints and tables
+
+-- 1.1) Drop Foreign Keys
 
 -- Q1: How to drop tables with Foreign Keys?
-
 -- A1: Check to see if Foreign Keys Exist, drop the Foreign Keys first, then drop the tables
 -- https://stackoverflow.com/questions/1776079/sql-drop-table-foreign-key-constraint
 
@@ -139,20 +142,6 @@ IF EXISTS
 (
     SELECT fk.*
       FROM sys.foreign_keys AS fk
-     WHERE fk.name = 'FK_tblCustomerDim_cust_add_id_tblAddressDim_add_id'
-           AND parent_object_id = OBJECT_ID(N'dbo.tblCustomerDim')
-)
-    BEGIN
-
-        ALTER TABLE dbo.tblCustomerDim DROP CONSTRAINT FK_tblCustomerDim_cust_add_id_tblAddressDim_add_id;
-
-END;
-
-
-IF EXISTS
-(
-    SELECT fk.*
-      FROM sys.foreign_keys AS fk
      WHERE fk.name = 'FK_tblAccountDim_branch_id_tblBranchDim_branch_id'
            AND parent_object_id = OBJECT_ID(N'dbo.tblAccountDim')
 )
@@ -217,6 +206,47 @@ IF EXISTS
         ALTER TABLE dbo.tblAccountDim DROP CONSTRAINT FK_tblAccountDim_pri_cust_id_tblCustomerDim_cust_id;
 
 END;
+
+
+IF EXISTS
+(
+    SELECT fk.*
+      FROM sys.foreign_keys AS fk
+     WHERE fk.name = 'FK_tblTransactionFact_branch_id_tblBranchDim_branch_id'
+           AND parent_object_id = OBJECT_ID(N'dbo.tblTransactionFact')
+)
+    BEGIN
+
+        ALTER TABLE dbo.tblTransactionFact DROP CONSTRAINT FK_tblTransactionFact_branch_id_tblBranchDim_branch_id;
+
+END;
+
+
+IF EXISTS
+(
+    SELECT fk.*
+      FROM sys.foreign_keys AS fk
+     WHERE fk.name = 'FK_tblTransactionFact_tran_type_id_tblTransactionTypeDim_tran_type_id'
+           AND parent_object_id = OBJECT_ID(N'dbo.tblTransactionFact')
+)
+    BEGIN
+
+        ALTER TABLE dbo.tblTransactionFact DROP CONSTRAINT FK_tblTransactionFact_tran_type_id_tblTransactionTypeDim_tran_type_id;
+
+END;
+
+
+-- 1.2) Drop Project 2 Tables
+
+IF OBJECT_ID('dbo.tblTransactionTypeDim', 'U') IS NOT NULL
+    BEGIN
+        DROP TABLE dbo.tblTransactionTypeDim;
+END; 
+
+IF OBJECT_ID('dbo.tblTransactionFact', 'U') IS NOT NULL
+    BEGIN
+        DROP TABLE dbo.tblTransactionFact;
+END; 
 
 
 
@@ -456,8 +486,6 @@ SELECT s.cust_id2 AS cust_id
      , s.pri_branch_id
      , s.cust_pri_branch_dist
      , s.cust_add_id
-     , s.cust_lat
-     , s.cust_lon
      , s.cust_rel_id
 INTO dbo.tblCustomerDim
   FROM dbo.stg_p1 AS s
@@ -467,7 +495,7 @@ INTO dbo.tblCustomerDim
 
 -- 2.9) Account Fact
 
--- Q2.9: What is data qualifies as Fact data for Accounts in this data set?
+-- Q2.9: What is data qualifies AS Fact data for Accounts in this data set?
 -- A2.9: Needs to be look like this
 -- - Point in time is measure -> as_of_date
 -- - Measures change over time
@@ -517,7 +545,7 @@ INTO dbo.tblAccountFact
 -- 2.10) Address Dimension
 
 -- Q2.10: I don't want to have two Address tables...one for Customer and another for Branch...how to model one table?
--- A2.10: The key is as follows...
+-- A2.10: The key is AS follows...
 
 -- - Rule out Customer and Branch located at the same address
 -- 0
@@ -577,6 +605,11 @@ SELECT DISTINCT
  ORDER BY 1
         , 2;
 
+INSERT INTO dbo.tblAccountCustomerDim
+SELECT -1 AS acct_id
+     , -1 AS cust_id
+     , -1 AS acct_cust_role_id;
+
 
 		
 -- 3.2) Account Customer Role Dimension
@@ -596,6 +629,10 @@ SELECT DISTINCT
   FROM dbo.stg_p1 AS s
  ORDER BY 1
         , 2;
+
+INSERT INTO dbo.tblAccountCustomerRoleDim
+SELECT -1 AS acct_cust_role_id
+     , 'Unknown' AS acct_cust_role_desc;
 
 
 
@@ -617,6 +654,16 @@ SELECT DISTINCT
  WHERE s.acct_cust_role_id = 1
  ORDER BY 1;
 
+INSERT INTO dbo.tblAccountDim
+SELECT -1 AS acct_id
+     , -1 AS prod_id
+     , '9999-12-31' AS open_date
+     , '9999-12-31' AS close_date
+     , 'C' AS open_close_code
+     , -1 AS branch_id
+     , -1 AS pri_cust_id
+     , -1 AS loan_amt;
+
 
  
 -- 3.4) Branch Dimension
@@ -634,6 +681,13 @@ SELECT DISTINCT
   FROM dbo.stg_p1 AS s
  ORDER BY 1;
 
+INSERT INTO dbo.tblBranchDim
+SELECT -1 AS branch_id
+     , 'UNK' AS branch_code
+     , 'Unknown' AS branch_desc
+     , -1 AS branch_add_id
+     , -1 AS region_id
+     , -1 AS area_id;
 
 
 -- 3.5) Region Dimension
@@ -647,6 +701,9 @@ SELECT DISTINCT
   FROM dbo.stg_p1 AS s
  ORDER BY 1;
 
+INSERT INTO dbo.tblRegionDim
+SELECT -1 AS region_id
+     , 'Unknown' AS region_desc;
 
 
 -- 3.6) Area Dimension
@@ -659,6 +716,10 @@ SELECT DISTINCT
      , 'Unknown' AS area_desc
   FROM dbo.stg_p1 AS s
  ORDER BY 1;
+
+INSERT INTO dbo.tblAreaDim
+SELECT -1 AS area_id
+     , 'Unknown' AS area_desc;
 
 
 
@@ -673,6 +734,9 @@ SELECT DISTINCT
   FROM dbo.stg_p1 AS s
  ORDER BY 1;
 
+INSERT INTO dbo.tblProductDim
+SELECT -1 AS prod_id
+     , 'Unknown' AS prod_desc;
 
 
 -- 3.8) Customer Dimension
@@ -690,17 +754,26 @@ SELECT DISTINCT
      , s.pri_branch_id
      , s.cust_pri_branch_dist
      , s.cust_add_id
-     , s.cust_lat
-     , s.cust_lon
      , s.cust_rel_id
   FROM dbo.stg_p1 AS s
  ORDER BY 1;
 
+INSERT INTO dbo.tblCustomerDim
+SELECT -1 AS cust_id
+     , 'Unknown' AS last_name
+     , 'Unknown' AS first_name
+     , 'U' AS gender
+     , '9999-12-31' AS birth_date
+     , '9999-12-31' AS cust_since_date
+     , -1 AS pri_branch_id
+     , -1 AS cust_pri_branch_dist
+     , -1 AS cust_add_id
+     , -1 AS cust_rel_id
 
 
 -- 3.9) Account Fact
 
--- Q3.9: How to load Account fact when multiple records found for one Account on one As of Date?
+-- Q3.9: How to load Account fact when multiple records found for one Account on one AS of Date?
 
 -- A3.9: Data integrity preserved if we filter for the Primary Customer records only
 -- - All Accounts have one and only one Primary Customer
@@ -750,6 +823,11 @@ SELECT s.cust_add_id AS add_id
      , s.cust_add_type AS add_type
   FROM dbo.stg_p1 AS s;
 
+INSERT INTO dbo.tblAddressDim
+SELECT -1 AS add_id
+     , -1 AS add_lat
+     , -1 AS add_lon
+     , 'U' AS add_type;
 
 
 
