@@ -13,9 +13,9 @@ Ver      Date        Author        Description
 
 
 NOTES:
-DFNB_dw_slvd = Deseret First Nation Bank - Data Warehouse - Solved
+DFNB_dw_slvd = Deseret First National Bank - Data Warehouse - Solved
 
-DFNB - Deseret First Nation Bank. A fictitious organization. Does not use any ZFNB data. Some general ZFNB 
+DFNB - Deseret First National Bank. A fictitious organization. Does not use any ZFNB data. Some general ZFNB 
 data model elements used as inspiration.
 
 This project was originally built for IT 240 offered at LDS Business College starting in Fall 2019 by Jon Jaussi (JJAUSSI).
