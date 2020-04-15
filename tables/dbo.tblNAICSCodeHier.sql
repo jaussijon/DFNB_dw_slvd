@@ -6,7 +6,7 @@ MODIFICATION LOG:
 Ver      Date        Author        Description
 -----   ----------   -----------   -------------------------------------------------------------------------------
 1.0     11/12/2019   JJAUSSI       1. Built this table for LDS BC IT240
-1.1     11/16/2019   JJAUSSI       1. Added PK and NOT NULL contraints
+1.1     04/02/2020   JJAUSSI       1. Added PK and NOT NULL contraints
 
 
 
@@ -27,7 +27,8 @@ distributed under the same license terms.
 USE [DFNB3]
 GO
 
-DROP TABLE [dbo].[tblNAICSCodeHier];
+DROP TABLE [dbo].[tblNAICSCodeHier]
+GO
 
 CREATE TABLE [dbo].[tblNAICSCodeHier](
 	[industry_sector_code] [float] NOT NULL,
@@ -40,7 +41,7 @@ CREATE TABLE [dbo].[tblNAICSCodeHier](
 	[industry_desc] [nvarchar](500) NOT NULL,
 	[nation_industry_code] [float] NOT NULL,
 	[nation_industry_desc] [nvarchar](500) NOT NULL,
- CONSTRAINT [PK_tblNAICSCodeHier] PRIMARY KEY CLUSTERED 
+CONSTRAINT [PK_tblNAICSCodeHier] PRIMARY KEY CLUSTERED 
 (
 	[nation_industry_code] ASC
 )

@@ -49,5 +49,3 @@ CREATE TABLE [stg].[NAICS_CODES_2017](
 	[2017_NAICS_US_title] [nvarchar](500) NULL
 ) ON [PRIMARY]
 GO
-
-
