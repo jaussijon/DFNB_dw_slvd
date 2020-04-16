@@ -63,7 +63,7 @@ distributed under the same license terms.
 			 , p.revolve_ind
 			 , p.loan_amt_lmt
           FROM dbo.stg_p1 AS s
-		  INNER JOIN stg.PRODUCT_PROFILE AS p
+		  INNER JOIN stg.PRODUCT_PROFILES AS p
 		          ON s.prod_id = p.prod_id
          ORDER BY 1;
 
@@ -77,7 +77,7 @@ distributed under the same license terms.
 			 , p.prod_desc
 			 , p.revolve_ind
 			 , p.loan_amt_lmt
-          FROM stg.PRODUCT_PROFILE AS p
+          FROM stg.PRODUCT_PROFILES AS p
          WHERE p.prod_id = -1;
                 
 
